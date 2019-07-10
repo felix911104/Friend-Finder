@@ -21,7 +21,7 @@ Visual Studio Code
 
 ## Repo links
 
-[bamazon](https://github.com/felix911104/Friend-Finder)
+[Friend-Finder](https://github.com/felix911104/Friend-Finder)
 
 ## GoogleDrive Link to show the project 
 
