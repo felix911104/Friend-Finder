@@ -174,58 +174,84 @@
     
   
   
+    <script type="text/javascript">
+      // Chosen CSS
+      var config = {
+        ".chosen-select": {},
+        ".chosen-select-deselect": {
+          allow_single_deselect: true
+        },
+        ".chosen-select-no-single": {
+          disable_search_threshold: 10
+        },
+        ".chosen-select-no-results": {
+          no_results_text: "Oops, nothing found!"
+        },
+        ".chosen-select-width": {
+          width: "95%"
+        }
+      };
   
-  <script type="text/javascript">
+      for (var selector in config) {
+        $(selector).chosen(config[selector]);
+      }
   
-    //jquery for when you click the submit button
-    $("#submitBtn").on("click", event => {
-      //prevents the default of a form which would be a get request
-      event.preventDefault();
+      // Capture the form inputs
+      $("#submit").on("click", function(event) {
+        event.preventDefault();
   
-      //comparator to check if the form has been completed properly
-      if(formValid()){
+        // Form validation
+        function validateForm() {
+          var isValid = true;
+          $(".form-control").each(function() {
+            if ($(this).val() === "") {
+              isValid = false;
+            }
+          });
   
-        //object that will store all the data from the form
-        var newFriend = {
-          Name: $("#name").val().trim(),
-          Photo: $("#photo").val().trim(),
-          Score: [
-            $("#q1").val(),
-            $("#q2").val(),
-            $("#q3").val(),
-            $("#q4").val(),
-            $("#q5").val(),
-            $("#q6").val(),
-            $("#q7").val(),
-            $("#q8").val(),
-            $("#q9").val(),
-            $("#q10").val()       
-          ]
+          $(".chosen-select").each(function() {
+  
+            if ($(this).val() === "") {
+              isValid = false;
+            }
+          });
+          return isValid;
         }
   
-        //i know i could hard code the url but this would get the url from the windows location object
-        var url = window.location.origin;
+        // If all required fields are filled
+        if (validateForm()) {
+          // Create an object for the user"s data
+          var userData = {
+            name: $("#name").val(),
+            photo: $("#photo").val(),
+            scores: [
+              $("#q1").val(),
+              $("#q2").val(),
+              $("#q3").val(),
+              $("#q4").val(),
+              $("#q5").val(),
+              $("#q6").val(),
+              $("#q7").val(),
+              $("#q8").val(),
+              $("#q9").val(),
+              $("#q10").val()
+            ]
+          };
   
-        //ajax that will make a post request using the newFriend object and will post the friend that will match
-        $.post(url + "/api/friends", newFriend, data => {
-          $("#bestie").text(data.Name);
-          $("#bestiePhoto").attr("src", data.Photo);
-          $("#bestieModal").modal("toggle");
-        })
+          // AJAX post the data to the friends API.
+          $.post("/api/friends", userData, function(data) {
   
-      } else {
-        alert("Please make sure all input fields are filled out.");
-      }
+            // Grab the result from the AJAX post so that the best match's name and photo are displayed.
+            $("#match-name").text(data.name);
+            $("#match-img").attr("src", data.photo);
   
-    })
+            // Show the modal with the best match
+            $("#results-modal").modal("toggle");
   
-    //function to check if the form is valid or not
-    function formValid(){
-      if($("#name").val() === "" || $("#email").val() === "" || $("#q1").val() === "empty" || $("#q2").val() === "empty" || $("#q3").val() === "empty" || $("#q4").val() === "empty" || $("#q5").val() === "empty" || $("#q6").val() === "empty" || $("#q7").val() === "empty" || $("#q8").val() === "empty" || $("#q9").val() === "empty" || $("#q10").val() === "empty") {
-        return false;
-      } else {
-        return true;
-      }
-  
-    }
-  </script></body></html>
+          });
+        } else {
+          alert("Please fill out all fields before submitting!");
+        }
+      });
+    </script>
+</body></html>
